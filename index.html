@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Futuristic UI Concept</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Helvetica Neue', sans-serif;
+    background: #0f0c29; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #24243e, #302b63, #0f0c29); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    color: #ffffff;
+    overflow: hidden;
+    perspective: 1200px;
+    animation: GradientShift 30s ease infinite;
+  background-size: 400% 400%;
+  }
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    flex-direction: column;
+    perspective: 500px;
+  }
+  .cube {
+    position: relative;
+    width: 200px;
+    transform-style: preserve-3d;
+    animation: rotateCube 10s infinite linear;
+  }
+  .cube div {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+    box-sizing: border-box;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+  transition: box-shadow 0.5s;
+  }
+  .cube .front  { transform: translateZ(100px); }
+  .cube .back   { transform: rotateY(180deg) translateZ(100px); }
+  .cube .right  { transform: rotateY( 90deg) translateZ(100px); }
+  .cube .left   { transform: rotateY(-90deg) translateZ(100px); }
+  .cube .top    { transform: rotateX( 90deg) translateZ(100px); }
+  .cube .bottom { transform: rotateX(-90deg) translateZ(100px); }
+
+  @keyframes rotateCube {
+    from { transform: rotateX(0deg) rotateY(0deg); }
+    to   { transform: rotateX(360deg) rotateY(360deg); }
+  }
+  @keyframes GradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.container:hover .cube div {
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+}
+.cube:hover {
+  animation: Rattle 1s infinite;
+}
+
+@keyframes Rattle {
+  0%, 100% { transform: rotate3d(1, 1, 1, 0deg); }
+  50% { transform: rotate3d(1, 1, 1, 5deg); }
+}
+
+</style>
+</head>
+<body>
+    <canvas id="webglCanvas"></canvas>
+    <canvas id="interactiveCanvas"></canvas>
+<div class="container">
+  <div class="cube">
+    <div class="front"></div>
+    <div class="back"></div>
+    <div class="right"></div>
+    <div class="left"></div>
+    <div class="top"></div>
+    <div class="bottom"></div>
+  </div>
+</div>
+
+<script>
+    if (window.DeviceOrientationEvent) {
+  window.addEventListener('deviceorientation', (e) => {
+    const gammaRotation = e.gamma / 30; // Device rotation around the y axis
+    const betaRotation = e.beta / 30; // Device rotation around the x axis
+
+    const cube = document.querySelector('.cube');
+    cube.style.transform = `rotateX(${betaRotation}deg) rotateY(${gammaRotation}deg)`;
+  });
+}
+
+    document.addEventListener('scroll', () => {
+  const layers = document.querySelectorAll('.parallax-layer');
+  const depth = window.scrollY / 300;
+  layers.forEach(layer => {
+    const speed = layer.dataset.speed;
+    const movement = -(depth * speed);
+    layer.style.transform = `translate3d(0, ${movement}px, 0)`;
+  });
+});
+
+document.addEventListener('mousemove', (event) => {
+  const { clientX, clientY } = event;
+  const centerX = window.innerWidth / 2;
+  const centerY = window.innerHeight / 2;
+  const deltaX = (clientX - centerX) / 100;
+  const deltaY = (clientY - centerY) / 100;
+
+  // Rotate the cube based on mouse position
+  const cube = document.querySelector('.cube');
+  cube.style.transform = `rotateX(${deltaY}deg) rotateY(${deltaX}deg)`;
+});
+const scene = new THREE.Scene();
+const canvas = document.getElementById('interactiveCanvas');
+const ctx = canvas.getContext('2d');
+</script>
+
+</body>
+</html>
